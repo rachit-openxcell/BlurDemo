@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="56dp"
+        app:layout_behavior="com.example.rachit.aemjdemo.Utility.BottomSheetBehaviorGoogleMapsLike"
+       >
+
+        <TextView
+            android:id="@+id/authorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Jessica Alba" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/authorName"
+            android:text="The Honest Company" />
+
+        <TextView
+            android:id="@+id/categoryName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textColor="#000"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            android:text="Retail and e-commerece" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/categoryName" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

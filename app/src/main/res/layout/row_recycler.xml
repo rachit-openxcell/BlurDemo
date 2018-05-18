@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+ >
+    
+    <ImageView
+        android:id="@+id/contentImage"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:paddingRight="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/contentTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/contentImage"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="What is the innovation idea?" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_height="0.5dp"
+        android:layout_width="match_parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintStart_toEndOf="@id/contentImage"
+        app:layout_constraintTop_toBottomOf="@id/contentTitle"
+        android:background="@color/colorWhite"/>
+
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/contentImage"
+        app:layout_constraintTop_toBottomOf="@id/view"
+        android:text="Test Text" />
+
+
+</android.support.constraint.ConstraintLayout>
+</layout>
