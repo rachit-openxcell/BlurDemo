@@ -22,13 +22,9 @@ import com.bumptech.glide.request.target.Target;
 import com.example.rachit.aemjdemo.Adapter.RecyclerAdapter;
 import com.example.rachit.aemjdemo.Model.ServerData;
 import com.example.rachit.aemjdemo.R;
-import com.example.rachit.aemjdemo.Utility.BlurBuilder;
 import com.example.rachit.aemjdemo.Utility.GlideApp;
 import com.example.rachit.aemjdemo.Utility.Utility;
 import com.example.rachit.aemjdemo.databinding.FragmentHomeBinding;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 
@@ -46,7 +42,7 @@ public class HomeFragment extends Fragment {
     //    Bitmap bitmapUp;
     Bitmap bit;
     private Disposable d;
-    List<Disposable> disposed = new ArrayList<>();
+    View blurView;
 //    Bitmap bitmapDown;
 //    BlurKit blurKit;
 //    ViewPager viewPager;
@@ -91,6 +87,8 @@ public class HomeFragment extends Fragment {
 
 //        viewPager = getActivity().findViewById(R.id.view_pager);
 //        blurKit = BlurKit.getInstance();
+        blurView = mBinding.getRoot().findViewById(R.id.blur_view);
+        blurView.setAlpha(0);
         recyclerAdapter = new RecyclerAdapter();
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mBinding.recyclerView.setAdapter(recyclerAdapter);
@@ -120,20 +118,21 @@ public class HomeFragment extends Fragment {
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
 
-                if (bit == null) {
+                /*if (bit == null) {
                     Log.e(TAG, "onScrollChange: bitmap is null ");
                     return;
-                }
+                }*/
 
                 Log.e(TAG, "----------------------------On Scroll Log Starts----------------------------");
 
-                final float perScroll = (float) (scrollY + height) / rootHeight * 100;
+//                final float perScroll = (float) (scrollY + height) / rootHeight * 100;
+                final float perScroll = (float) (scrollY + height) / rootHeight;
 
 //                int scrollDirection = scrollY - oldScrollY;
 
-                if (perScroll >= 13) {
-                    if (perScroll / 4 > 25) {
-                        loadBitmap(25);
+                if (perScroll >= 0.13) {
+                    if (perScroll + 0.1 > 0.85) {
+                        loadBitmap(0.85);
 //                        Bitmap temp = BlurBuilder.blur(bit, 25, mContext);
 //                        GlideApp.with(mContext)
 //                                .load(temp)
@@ -141,12 +140,12 @@ public class HomeFragment extends Fragment {
                         Log.e(TAG, "onScrollChange: full scrolll ------- radius 25");
                     } else {
 //                        if (scrollDirection > 0) {
-                        loadBitmap(perScroll / 4);
+                        loadBitmap(perScroll + 0.1);
 //                            Bitmap temp = BlurBuilder.blur(bit, perScroll / 4, mContext);
 //                            GlideApp.with(mContext)
 //                                    .load(temp)
 //                                    .into(mBinding.imgData);
-                        Log.e(TAG, "onScrollChange: scroll up scrolll ------- " + perScroll / 4);
+                        Log.e(TAG, "onScrollChange: scroll up scrolll ------- " + perScroll);
                     /*} else if (scrollDirection < 0) {
 
                             Log.e(TAG, "onScrollChange: scroll down scrolll ------- " + perScroll / 4);
@@ -169,7 +168,9 @@ public class HomeFragment extends Fragment {
 
                     /*if (d!=null)
                         d.dispose();*/
-                    mBinding.imgData.setImageBitmap(bit);
+//                    mBinding.imgData.setImageBitmap(bit);
+
+                    blurView.setAlpha(0);
 
 //                    bitmapUp = bit.copy(bit.getConfig(), true);
 //                    bitmapDown = bit.copy(bit.getConfig(), true);
@@ -230,7 +231,9 @@ public class HomeFragment extends Fragment {
        /* new Thread(new Runnable() {
             @Override
             public void run() {*/
-                mBinding.imgData.setImageBitmap(BlurBuilder.blur(bit, (float) scroll, mContext));
+//                mBinding.imgData.setImageBitmap(BlurBuilder.blur(bit, (float) scroll, mContext));
+        blurView.setAlpha((float) scroll);
+
             /*}
         });*/
     }
