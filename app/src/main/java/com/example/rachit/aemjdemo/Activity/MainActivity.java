@@ -15,8 +15,10 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.rachit.aemjdemo.Fragment.AboutUs;
 import com.example.rachit.aemjdemo.Fragment.ContentContainer;
 import com.example.rachit.aemjdemo.Fragment.PrivacyPolicy;
+import com.example.rachit.aemjdemo.Fragment.Terms;
 import com.example.rachit.aemjdemo.R;
 import com.example.rachit.aemjdemo.databinding.ActivityMainBinding;
 
@@ -59,6 +61,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mBinding.navigation.setNavigationItemSelectedListener(this);
         mBinding.imgToolbar.setOnClickListener(this);
+
+        initUI();
+    }
+
+    private void initUI() {
+
+        mBinding.navigation.getMenu().getItem(0).setChecked(true);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame, ContentContainer.newInstance()); // replace a Fragment with Frame Layout
+        transaction.commit(); // commit the changes
     }
 
     @Override
@@ -75,15 +87,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         Fragment fragment = null;
+        Fragment fragment1 = null;
 
         switch (item.getItemId()) {
             case R.id.menu_home:
-                fragment = ContentContainer.newInstance();
+                if(!item.isChecked()) {
+                    item.setChecked(true);
+                    fragment = ContentContainer.newInstance();
+                }
+                else
+                    mBinding.drawerLayout.closeDrawers(); // close the all open Drawer Views
                 break;
             case R.id.menu_privacy_policy:
-                fragment = PrivacyPolicy.newInstance();
+                if(!item.isChecked()) {
+                    fragment1 = PrivacyPolicy.newInstance();
+                    item.setChecked(true);
+                }
+                else
+                    mBinding.drawerLayout.closeDrawers(); // close the all open Drawer Views
+                break;
+            case R.id.menu_terms:
+                if(!item.isChecked()) {
+                    fragment1 = Terms.newInstance();
+                    item.setChecked(true);
+                }
+                else
+                    mBinding.drawerLayout.closeDrawers(); // close the all open Drawer Views
+                break;
+            case R.id.menu_about_us:
+                if(!item.isChecked()) {
+                    fragment1 = AboutUs.newInstance();
+                    item.setChecked(true);
+                }
+                else
+                    mBinding.drawerLayout.closeDrawers(); // close the all open Drawer Views
+                break;
         }
         if (fragment != null) {
+
+            mBinding.contentFrame2.setVisibility(View.GONE);
+            mBinding.contentFrame.setVisibility(View.VISIBLE);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -95,6 +138,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             transaction.replace(R.id.content_frame, fragment); // replace a Fragment with Frame Layout
             transaction.commit(); // commit the changes
             return true;
+        } else if(fragment1 != null) {
+
+            mBinding.contentFrame2.setVisibility(View.VISIBLE);
+            mBinding.contentFrame.setVisibility(View.GONE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mBinding.drawerLayout.closeDrawers(); // close the all open Drawer Views
+                }
+            }, 200);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content_frame_2, fragment1); // replace a Fragment with Frame Layout
+            transaction.commit(); // commit the changes
         }
         return false;
     }

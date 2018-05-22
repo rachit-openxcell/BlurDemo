@@ -4,49 +4,59 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 <android.support.constraint.ConstraintLayout
+    android:descendantFocusability="blocksDescendants"
+    android:paddingTop="16dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
- >
+    android:layout_height="wrap_content" >
     
     <ImageView
         android:id="@+id/contentImage"
         android:layout_width="55dp"
         android:layout_height="55dp"
-        android:paddingRight="8dp"
+        android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_launcher_background"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/contentTitle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:textSize="20sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="2dp"
         app:layout_constraintStart_toEndOf="@id/contentImage"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:text="What is the innovation idea?" />
 
     <View
         android:id="@+id/view"
+        android:layout_width="0dp"
         android:layout_height="0.5dp"
-        android:layout_width="match_parent"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/colorWhite"
+        android:layout_marginTop="2dp"
         app:layout_constraintStart_toEndOf="@id/contentImage"
-        app:layout_constraintTop_toBottomOf="@id/contentTitle"
-        android:background="@color/colorWhite"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contentTitle" />
 
 
     <TextView
         android:id="@+id/description"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:textSize="20sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/contentImage"
         app:layout_constraintTop_toBottomOf="@id/view"
         android:text="Test Text" />
-
 
 </android.support.constraint.ConstraintLayout>
 </layout>

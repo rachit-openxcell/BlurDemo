@@ -34,8 +34,6 @@ public class ContentContainer extends Fragment {
     private static final String TAG = "ContentContainer";
     Context mContext;
     FragmentContentContainerBinding mBinding;
-//    BottomSheetBehaviorGoogleMapsLike sheetBehavior;
-//    ConstraintLayout bottomSheet;
 
     public ContentContainer() {
         // Required empty public constructor
@@ -69,48 +67,8 @@ public class ContentContainer extends Fragment {
         contentPagerAdapter = new ContentPagerAdapter(getChildFragmentManager());
         mBinding.viewPager.setAdapter(contentPagerAdapter);
 
+
         getPageDetailWebservice();
-
-
-
-        /*CoordinatorLayout coordinatorLayout = mBinding.getRoot().findViewById(R.id.coordinatorlayout);
-        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
-        final BottomSheetBehaviorGoogleMapsLike behavior = BottomSheetBehaviorGoogleMapsLike.from(bottomSheet);*/
-
-        /*sheetBehavior = BottomSheetBehaviorGoogleMapsLike.from(mBinding.getRoot().findViewById(R.id.bottom_sheet));
-
-        sheetBehavior.addBottomSheetCallback(new BottomSheetBehaviorGoogleMapsLike.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED:
-                        Log.d("bottomsheet-", "STATE_COLLAPSED");
-                        break;
-                    case BottomSheetBehaviorGoogleMapsLike.STATE_DRAGGING:
-                        Log.d("bottomsheet-", "STATE_DRAGGING");
-                        break;
-                    case BottomSheetBehaviorGoogleMapsLike.STATE_EXPANDED:
-                        Log.d("bottomsheet-", "STATE_EXPANDED");
-                        break;
-                    case BottomSheetBehaviorGoogleMapsLike.STATE_ANCHOR_POINT:
-                        Log.d("bottomsheet-", "STATE_ANCHOR_POINT");
-                        break;
-                    case BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN:
-                        Log.d("bottomsheet-", "STATE_HIDDEN");
-                        break;
-                    default:
-                        Log.d("bottomsheet-", "STATE_SETTLING");
-                        break;
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            }
-        });
-
-        sheetBehavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);*/
-
     }
 
     @Override
@@ -128,17 +86,12 @@ public class ContentContainer extends Fragment {
         @Override
         public void onResponse(Object response) {
 
-//            Fragment fragment = null;
-
             ServerData serverData = (ServerData) Utility.getObjectFromJsonString(response.toString(), ServerData.class);
 
             for(int i = 0; i < serverData.getData().size(); i++ ){
-                /*fragment = HomeFragment.newInstance(response.toString(), i);
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame, fragment); // replace a Fragment with Frame Layout
-                transaction.commit();*/
                 contentPagerAdapter.addFrag(HomeFragment.newInstance(response.toString(), i));
             }
+            mBinding.viewPager.setOffscreenPageLimit(serverData.getData().size());
         }
     };
 

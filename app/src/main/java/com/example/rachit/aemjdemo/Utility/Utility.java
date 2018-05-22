@@ -30,6 +30,7 @@ public class Utility {
         return isConnected;
     }
 
+    public  static int position=0;
 
     /**
      * GSON UTILITY Methods
@@ -57,7 +58,8 @@ public class Utility {
     }
 
     public interface NetworkUtility {
-        public static final String BASE_URL = "http://tokbox.orderhive.plus:1234/";
+        public static final String BASE_URL = "http://nforceapps.com:1234/";
+//        public static final String BASE_URL = "http://tokbox.orderhive.plus:1234/";
 
         public static final String WS_GET_STATIC_PAGE_DETAIL = BASE_URL + "staticPage";
         public static final String WS_GET_BLOG_DETAIL = BASE_URL + "blog";
