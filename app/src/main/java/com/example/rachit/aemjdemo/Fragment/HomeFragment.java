@@ -22,10 +22,10 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.commit451.nativestackblur.NativeStackBlur;
 import com.example.rachit.aemjdemo.Adapter.RecyclerAdapter;
 import com.example.rachit.aemjdemo.Model.ServerData;
 import com.example.rachit.aemjdemo.R;
-import com.example.rachit.aemjdemo.Utility.BlurBuilder;
 import com.example.rachit.aemjdemo.Utility.GlideApp;
 import com.example.rachit.aemjdemo.Utility.Utility;
 import com.example.rachit.aemjdemo.databinding.FragmentHomeBinding;
@@ -117,6 +117,7 @@ public class HomeFragment extends Fragment {
         mBinding.recyclerView.setNestedScrollingEnabled(false);
         recyclerAdapter.addAll(serverData, position);
         Log.e(TAG, "onActivityCreated: 2" + " ***********************");
+        initData();
 
         mBinding.scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
 
@@ -124,20 +125,20 @@ public class HomeFragment extends Fragment {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
-
                 Log.e(TAG, "onScrollChange:ScrollY is " + scrollY);
 
                 Log.e(TAG, "----------------------------On Scroll Log Starts----------------------------");
 
                 final float perScroll = (float) (scrollY + height) / rootHeight;
 
-                if (perScroll >= 0.13f) {
-                    if (perScroll + 0.1f > 0.85f) {
-                        loadBitmap(0.85f);
-                        Log.e(TAG, "onScrollChange: full scrolll ------- radius 25");
+                if (perScroll > height/rootHeight) {
+                    if (perScroll > 0.85f) {
+                        loadBitmap(0.85f, 1f);
+                        Log.e(TAG, "onScrollChange: full scrolll ------- max radius");
                     } else {
-                        loadBitmap(perScroll + 0.1f);
-                        Log.e(TAG, "onScrollChange: scroll up scrolll ------- " + perScroll);
+                        loadBitmap((perScroll/6)+perScroll, (perScroll/6)+perScroll);
+                        Log.e(TAG, "onScrollChange: viewAlpha ------- " + perScroll);
+                        Log.e(TAG, "onScrollChange: blurAlpha ------- " + ((perScroll/6)+perScroll));
                     /*} else if (scrollDirection < 0) {
 
                             Log.e(TAG, "onScrollChange: scroll down scrolll ------- " + perScroll / 4);
@@ -182,34 +183,22 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-//                        bitmapUp = resource.copy(resource.getConfig(), true);
-//                        bitmapDown = resource.copy(resource.getConfig(), true);
                         bit = resource.copy(resource.getConfig(), true);
-//                        blurView.setImageBitmap(ImageFilter.applyFilter(bit,ImageFilter.Filter.GAUSSIAN_BLUR,30.0));
-//                        Log.e(TAG, "SameBitmap:bitmapDown and bit " + bitmapDown.sameAs(bit));
-//                        Log.e(TAG, "SameBitmap:bitmapUp and bit " + bitmapUp.sameAs(bit));
-//                        Log.e(TAG, "SameBitmap:bitmapUp and bitmapDown " + bitmapUp.sameAs(bitmapDown));
-                        d = Observable.fromCallable(() ->
+//                        NativeStackBlur.process(bit, 150))
+                        //                                BlurBuilder.blur(bit, 25, mContext))
+                        //        BlurBuilder.blur(bit, (float) scroll, mContext))
+                        d = Observable.fromCallable(() -> NativeStackBlur.process(bit, 150)).subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(bitmap1 -> {
+                                            mBinding.blurView.setImageBitmap(bitmap1);
+                                        });
 
-                                BlurBuilder.blur(bit, 25, mContext))
-//        BlurBuilder.blur(bit, (float) scroll, mContext))
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(bitmap1 -> {
-//                                showProgress(false);
-                                    mBinding.blurView.setImageBitmap(bitmap1);
-                                });
 
                         return false;
                     }
                 }).into(mBinding.imgData);
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                mBinding.scrollView.scrollTo(0,scrollY);
-//            }
-//        },2000);
+
     }
 
     private void initData() {
@@ -240,10 +229,10 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void loadBitmap(float scroll) {
+    private void loadBitmap(float viewAlpha, float blurAlpha) {
 
-        if (d != null)
-            d.dispose();
+        /*if (d != null)
+            d.dispose();*/
         /*d = Observable.fromCallable(() ->
 
             ImageFilter.applyFilter(bit,ImageFilter.Filter.GAUSSIAN_BLUR,30d))
@@ -260,8 +249,11 @@ public class HomeFragment extends Fragment {
             public void run() {*/
 //                mBinding.imgData.setImageBitmap(BlurBuilder.blur(bit, (float) scroll, mContext));
 //        mBinding.imgData.setImageBitmap(ImageFilter.applyFilter(bit,ImageFilter.Filter.GAUSSIAN_BLUR,24d));
-        blurView.setAlpha(scroll);
-        view.setAlpha(scroll);
+        Log.e(TAG, "onScrollChange: viewAlpha ------- " + viewAlpha);
+        Log.e(TAG, "onScrollChange: blurAlpha ------- " + blurAlpha);
+
+        blurView.setAlpha(blurAlpha);
+        view.setAlpha(viewAlpha);
 
             /*}
         });*/

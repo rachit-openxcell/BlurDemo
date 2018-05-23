@@ -43,5 +43,32 @@ public class BlurBuilder {
         t.destroy();
         rs.destroy();
         return bitmapUp;
+
+        /*//Radius range (0 < r <= 25)
+        if(radius <= 0){
+            radius = 0.1f;
+        }else if(radius > 25){
+            radius = 25.0f;
+        }
+
+        Bitmap bit = Bitmap.createBitmap(
+                bitmap.getWidth(), bitmap.getHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        RenderScript renderScript = RenderScript.create(context);
+
+        Allocation blurInput = Allocation.createFromBitmap(renderScript, bitmap);
+        Allocation blurOutput = Allocation.createFromBitmap(renderScript, bit);
+
+        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(renderScript,
+                Element.U8_4(renderScript));
+        blur.setInput(blurInput);
+        blur.setRadius(radius);
+        blur.forEach(blurOutput);
+
+        blurOutput.copyTo(bit);
+        renderScript.destroy();
+        return bit;*/
+
     }
 }
