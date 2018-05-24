@@ -4,7 +4,6 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,9 @@ import com.example.rachit.aemjdemo.databinding.RowRecyclerBinding;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    Context mContext;
-    ServerData serverData;
-    int pos;
+    private Context mContext;
+    private ServerData serverData;
+    private int pos;
 
     public RecyclerAdapter(Context context) {
         this.mContext = context;
@@ -29,7 +28,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.serverData = serverData;
         this.pos = pos;
         notifyDataSetChanged();
-        Log.e(TAG, "getItemCount: "+ serverData.getData().get(pos).getContent().size()  +" ***********************" );
     }
 
     @NonNull
@@ -44,7 +42,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder1, int position) {
         BlogViewHolder holder = (BlogViewHolder) holder1;
-        Log.e(TAG, "onBindViewHolder: position " + position +" ***********************"  );
         GlideApp.with(mContext)
                 .load(serverData.getData().get(pos).getContent().get(position).getContentImage())
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
@@ -54,7 +51,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.rowRecyclerBinding.description.setText(serverData.getData().get(pos).getContent().get(position).getDescription());
     }
 
-    private static final String TAG = "RecyclerAdapter";
     @Override
     public int getItemCount() {
         return serverData.getData().get(pos).getContent().size();
