@@ -88,10 +88,10 @@ public class ContentContainer extends Fragment {
 
             ServerData serverData = (ServerData) Utility.getObjectFromJsonString(response.toString(), ServerData.class);
 
-            for(int i = 0; i < serverData.getData().size(); i++ ){
-                contentPagerAdapter.addFrag(HomeFragment.newInstance(response.toString(), i));
+            for (int i = 0; i < serverData.getData().size(); i++) {
+                contentPagerAdapter.addData(response.toString());
             }
-            mBinding.viewPager.setOffscreenPageLimit(serverData.getData().size());
+//            mBinding.viewPager.setOffscreenPageLimit(serverData.getData().size());
         }
     };
 
@@ -134,28 +134,28 @@ public class ContentContainer extends Fragment {
         Volley.getInstance(mContext).addToRequestQueue(mVolleyNetworkRequest, Utility.NetworkUtility.WS_GET_BLOG_DETAIL);
     }
 
-    public class ContentPagerAdapter extends FragmentStatePagerAdapter {
+    private static class ContentPagerAdapter extends FragmentStatePagerAdapter {
 
-        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> listResponses = new ArrayList<>();
 
-        public ContentPagerAdapter(FragmentManager fm) {
+        ContentPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return mFragmentList.get(position);
+            return HomeFragment.newInstance(listResponses.get(position), position);
         }
 
         @Override
         public int getCount() {
-            return mFragmentList.size();
+            return listResponses.size();
         }
 
-        public void addFrag(Fragment fragment){
-            mFragmentList.add(fragment);
+        public void addData(String response) {
+            listResponses.add(response);
             notifyDataSetChanged();
-//            mBinding.viewPager.setOffscreenPageLimit(mFragmentList.size());
         }
+
     }
 }

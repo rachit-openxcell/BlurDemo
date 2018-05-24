@@ -29,7 +29,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.serverData = serverData;
         this.pos = pos;
         notifyDataSetChanged();
-        Log.e(TAG, "getItemCount: "+ serverData.getData().get(pos).getContent().size()  +" ***********************" );
+//        Log.e(TAG, "getItemCount: "+ serverData.getData().get(pos).getContent().size()  +" ***********************" );
     }
 
     @NonNull
@@ -44,7 +44,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder1, int position) {
         BlogViewHolder holder = (BlogViewHolder) holder1;
-        Log.e(TAG, "onBindViewHolder: position " + position +" ***********************"  );
+//        Log.e(TAG, "onBindViewHolder: position " + position +" ***********************"  );
         GlideApp.with(mContext)
                 .load(serverData.getData().get(pos).getContent().get(position).getContentImage())
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)

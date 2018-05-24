@@ -5,6 +5,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -47,8 +48,12 @@ public class HomeFragment extends Fragment {
     private int rootHeight = 0;
     Bitmap bit;
     private Disposable d;
-    ImageView blurView;
-    View view;
+
+    /**
+     * For maintaining scroll position
+     *
+     */
+    private int restoredScrollY=0;
 
     public HomeFragment() {
     }
@@ -62,7 +67,6 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (getArguments() != null) {
@@ -71,18 +75,28 @@ public class HomeFragment extends Fragment {
             position = getArguments().getInt("POS");
         }
         super.onCreate(savedInstanceState);
+
+        /**
+         * Check if we have any stored scrollstate of saved instance
+         *
+         */
+        if(savedInstanceState!=null){
+            restoredScrollY=savedInstanceState.getInt("scrollY");
+            Log.i(TAG, "onCreate: restoredScrollY: "+restoredScrollY);
+        }
+        Log.i(TAG, "onCreate: " + position);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        Log.i(TAG, "onCreateView: " + position);
         return mBinding.getRoot();
     }
 
-     ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+    ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         public void onGlobalLayout() {
             // measure your views here
             Log.e(TAG, "onGlobalLayout: " + position + " ***********************");
@@ -94,20 +108,46 @@ public class HomeFragment extends Fragment {
             Log.e(TAG, "onActivityCreated: padd " + padd);
 
             if (getActivity() != null)
-                mBinding.bottomSheet.setPadding(0, padd - (int) dpToPixel(16), 0, 0);
-            Log.e(TAG, "onActivityCreated: getPaddingTop()  " + mBinding.bottomSheet.getPaddingTop());
-            mBinding.constraint.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
+                mBinding.constraintRoot.setPadding(0, padd - (int) dpToPixel(16), 0, 0);
+            Log.e(TAG, "onActivityCreated: getPaddingTop()  " + mBinding.constraintRoot.getPaddingTop());
+
+            mBinding.scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    final float perScroll = (float) (scrollY + height) / rootHeight;
+                    if (perScroll > height / rootHeight) {
+                        if (perScroll > 0.85f) {
+                            loadBitmap(0.85f, 1f);
+                        } else {
+                            loadBitmap((perScroll / 6) + perScroll, (perScroll / 6) + perScroll);
+                        }
+                    } else {
+                        mBinding.blurView.setAlpha(0f);
+                        mBinding.transView.setAlpha(0f);
+                    }
+                }
+            });
+
+            // Maintain the scrollstate
+            Log.i(TAG, "onGlobalLayout: set scrollY");
+            mBinding.scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mBinding.scrollView.scrollTo(0,restoredScrollY);
+                }
+            });
+
+            mBinding.constraintRoot.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
 
         }
     };
+
+
     @SuppressLint("CheckResult")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        Log.e(TAG, "onActivityCreated: 1" + " ***********************");
-        blurView = mBinding.getRoot().findViewById(R.id.blur_view);
-        view = mBinding.getRoot().findViewById(R.id.trans_view);
+        Log.i(TAG, "onActivityCreated: " + position);
         recyclerAdapter = new RecyclerAdapter(mContext);
 
         mBinding.constraint.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
@@ -116,62 +156,9 @@ public class HomeFragment extends Fragment {
         mBinding.recyclerView.setAdapter(recyclerAdapter);
         mBinding.recyclerView.setNestedScrollingEnabled(false);
         recyclerAdapter.addAll(serverData, position);
-        Log.e(TAG, "onActivityCreated: 2" + " ***********************");
         initData();
 
-        mBinding.scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
 
-
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
-                Log.e(TAG, "onScrollChange:ScrollY is " + scrollY);
-
-                Log.e(TAG, "----------------------------On Scroll Log Starts----------------------------");
-
-                final float perScroll = (float) (scrollY + height) / rootHeight;
-
-                if (perScroll > height/rootHeight) {
-                    if (perScroll > 0.85f) {
-                        loadBitmap(0.85f, 1f);
-                        Log.e(TAG, "onScrollChange: full scrolll ------- max radius");
-                    } else {
-                        loadBitmap((perScroll/6)+perScroll, (perScroll/6)+perScroll);
-                        Log.e(TAG, "onScrollChange: viewAlpha ------- " + perScroll);
-                        Log.e(TAG, "onScrollChange: blurAlpha ------- " + ((perScroll/6)+perScroll));
-                    /*} else if (scrollDirection < 0) {
-
-                            Log.e(TAG, "onScrollChange: scroll down scrolll ------- " + perScroll / 4);
-                            loadBitmap(perScroll / 4);
-//                            Bitmap temp = BlurBuilder.blur(bit, perScroll / 4, mContext);
-//                            GlideApp.with(mContext)
-//                                    .load(temp)
-//                                    .into(mBinding.imgData);
-                        }*/
-                    }
-
-
-                } else {
-
-                    Log.e(TAG, "onScrollChange: origin full scroll down ------- ");
-//
-//                    GlideApp.with(mContext)
-//                            .load(bit)
-//                            .into(mBinding.imgData);
-
-                    /*if (d!=null)
-                        d.dispose();*/
-//                    mBinding.imgData.setImageBitmap(bit);
-
-                    blurView.setAlpha(0f);
-                    view.setAlpha(0f);
-
-//                    bitmapUp = bit.copy(bit.getConfig(), true);
-//                    bitmapDown = bit.copy(bit.getConfig(), true);
-
-                }
-            }
-        });
 
         GlideApp.with(mContext).asBitmap()
                 .load(serverData.getData().get(position).getImage())
@@ -188,10 +175,10 @@ public class HomeFragment extends Fragment {
                         //                                BlurBuilder.blur(bit, 25, mContext))
                         //        BlurBuilder.blur(bit, (float) scroll, mContext))
                         d = Observable.fromCallable(() -> NativeStackBlur.process(bit, 150)).subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(bitmap1 -> {
-                                            mBinding.blurView.setImageBitmap(bitmap1);
-                                        });
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(bitmap1 -> {
+                                    mBinding.blurView.setImageBitmap(bitmap1);
+                                });
 
 
                         return false;
@@ -205,7 +192,7 @@ public class HomeFragment extends Fragment {
         mBinding.authorName.setText(serverData.getData().get(position).getAuthorName());
         mBinding.categoryName.setText(serverData.getData().get(position).getCategoryName());
         mBinding.title.setText(serverData.getData().get(position).getTitle());
-        Log.e(TAG, "initData: " + " ***********************");
+//        Log.e(TAG, "initData: " + " ***********************");
     }
 
     @Override
@@ -224,7 +211,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
 
         if (recyclerAdapter != null) {
-            Log.e(TAG, "onResume: " + " ***********************");
+//            Log.e(TAG, "onResume: " + " ***********************");
             recyclerAdapter.notifyDataSetChanged();
         }
     }
@@ -249,11 +236,11 @@ public class HomeFragment extends Fragment {
             public void run() {*/
 //                mBinding.imgData.setImageBitmap(BlurBuilder.blur(bit, (float) scroll, mContext));
 //        mBinding.imgData.setImageBitmap(ImageFilter.applyFilter(bit,ImageFilter.Filter.GAUSSIAN_BLUR,24d));
-        Log.e(TAG, "onScrollChange: viewAlpha ------- " + viewAlpha);
-        Log.e(TAG, "onScrollChange: blurAlpha ------- " + blurAlpha);
+//        Log.e(TAG, "onScrollChange: viewAlpha ------- " + viewAlpha);
+//        Log.e(TAG, "onScrollChange: blurAlpha ------- " + blurAlpha);
 
-        blurView.setAlpha(blurAlpha);
-        view.setAlpha(viewAlpha);
+        mBinding.blurView.setAlpha(blurAlpha);
+        mBinding.transView.setAlpha(viewAlpha);
 
             /*}
         });*/
@@ -262,4 +249,13 @@ public class HomeFragment extends Fragment {
     public float dpToPixel(int dp) {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState() called with: outState = [" + outState + "]  "+position);
+        outState.putInt("scrollY",mBinding.scrollView.getScrollY());
+        super.onSaveInstanceState(outState);
+    }
+
+
 }
