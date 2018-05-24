@@ -33,6 +33,9 @@ public class PrivacyPolicy extends Fragment {
     FragmentPrivacyPolicyBinding mBinding;
     private static final String TAG = "PrivacyPolicy";
     Context mContext;
+//    private OnFragmentInteractionListener mListener;
+
+
     public PrivacyPolicy() {
         // Required empty public constructor
     }
@@ -51,6 +54,9 @@ public class PrivacyPolicy extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        /*if (mListener != null) {
+            mListener.onFragmentInteraction("Privacy Policy");
+        }*/
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_privacy_policy, container, false);
         return mBinding.getRoot();
     }
@@ -119,10 +125,18 @@ public class PrivacyPolicy extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
+        /*try {
+            mListener = (OnFragmentInteractionListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+//        mListener = null;
     }
+
 }

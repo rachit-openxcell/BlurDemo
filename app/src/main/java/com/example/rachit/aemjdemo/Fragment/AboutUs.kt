@@ -24,6 +24,7 @@ class AboutUs : Fragment() {
 
     var mContext:Context? = null
     val TAG:String = "AboutUs"
+//    var mListener:OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +33,23 @@ class AboutUs : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+       /* if (mListener != null) {
+            mListener?.onFragmentInteraction("About Us")
+        }
+*/
         return inflater.inflate(R.layout.fragment_about_us, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        activity?.actionBar?. let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            it.title = Html.fromHtml("<font color='#000000'>About Us</font>", Html.FROM_HTML_MODE_LEGACY)
+            } else {
+            it.title = Html.fromHtml("<font color='#000000'>About Us</font>")
+            }
+        }
         getPageDetailWebservice()
     }
 
@@ -83,14 +95,23 @@ class AboutUs : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
+
+        /*try {
+            mListener = context as OnFragmentInteractionListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException(context.toString() + " must implement OnFragmentInteractionListener")
+        }*/
+
     }
 
     override fun onDetach() {
         super.onDetach()
+//        mListener = null
     }
 
     companion object {
         @JvmStatic
         fun newInstance() = AboutUs()
     }
+
 }

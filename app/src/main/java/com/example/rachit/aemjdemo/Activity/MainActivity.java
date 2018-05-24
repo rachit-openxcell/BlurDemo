@@ -1,6 +1,7 @@
 package com.example.rachit.aemjdemo.Activity;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBinding.navigation.setLayoutParams(params);
 
         getSupportActionBar().setTitle(null);
+        mBinding.toolbar.setTitleTextColor(Color.BLACK);
         mBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         mBinding.toolbar.setNavigationIcon(null);
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.menu_home:
                 if(!item.isChecked()) {
                     item.setChecked(true);
+                    mBinding.toolbar.setTitle(null);
                     fragment = ContentContainer.newInstance();
                 }
                 else
@@ -100,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.menu_privacy_policy:
                 if(!item.isChecked()) {
+                    mBinding.toolbarTitle.setText(item.getTitle());
                     fragment1 = PrivacyPolicy.newInstance();
                     item.setChecked(true);
                 }
@@ -108,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.menu_terms:
                 if(!item.isChecked()) {
+                    mBinding.toolbarTitle.setText(item.getTitle());
                     fragment1 = Terms.newInstance();
                     item.setChecked(true);
                 }
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.menu_about_us:
                 if(!item.isChecked()) {
+                    mBinding.toolbarTitle.setText(item.getTitle());
                     fragment1 = AboutUs.newInstance();
                     item.setChecked(true);
                 }
@@ -155,7 +161,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return false;
     }
-
-
 }
 

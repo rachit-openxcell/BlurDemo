@@ -11,23 +11,6 @@
         android:layout_height="match_parent"
         tools:context=".Fragment.HomeFragment">
 
-        <!--<com.example.rachit.aemjdemo.Utility.BlurLayout
-            android:id="@+id/blurLayout"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--<FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">-->
-
         <ImageView
             android:id="@+id/img_data"
             android:layout_width="0dp"
@@ -59,10 +42,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <!--</FrameLayout>-->
-
-        <!--</com.example.rachit.aemjdemo.Utility.BlurLayout>-->
 
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/scrollView"

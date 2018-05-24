@@ -5,9 +5,9 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.NestedScrollView.OnScrollChangeListener;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -32,7 +32,6 @@ import com.example.rachit.aemjdemo.databinding.FragmentHomeBinding;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class HomeFragment extends Fragment {
@@ -46,9 +45,9 @@ public class HomeFragment extends Fragment {
     private int height = 0;
     private int rootHeight = 0;
     Bitmap bit;
-    private Disposable d;
     ImageView blurView;
     View view;
+//    private OnFragmentInteractionListener mListener;
 
     public HomeFragment() {
     }
@@ -74,11 +73,15 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+
+        /*if (mListener != null) {
+            mListener.onFragmentInteraction(null);
+        }*/
         return mBinding.getRoot();
     }
 
@@ -97,14 +100,15 @@ public class HomeFragment extends Fragment {
                 mBinding.bottomSheet.setPadding(0, padd - (int) dpToPixel(16), 0, 0);
             Log.e(TAG, "onActivityCreated: getPaddingTop()  " + mBinding.bottomSheet.getPaddingTop());
             mBinding.constraint.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
-
+            mBinding.bottomSheet.setVisibility(View.VISIBLE);
         }
     };
-    @SuppressLint("CheckResult")
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mBinding.bottomSheet.setVisibility(View.INVISIBLE);
         Log.e(TAG, "onActivityCreated: 1" + " ***********************");
         blurView = mBinding.getRoot().findViewById(R.id.blur_view);
         view = mBinding.getRoot().findViewById(R.id.trans_view);
@@ -119,57 +123,27 @@ public class HomeFragment extends Fragment {
         Log.e(TAG, "onActivityCreated: 2" + " ***********************");
         initData();
 
-        mBinding.scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
+        mBinding.scrollView.setOnScrollChangeListener((OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
+            Log.e(TAG, "onScrollChange:ScrollY is " + scrollY);
 
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            Log.e(TAG, "----------------------------On Scroll Log Starts----------------------------");
 
-                Log.e(TAG, "onScrollChange:ScrollY is " + scrollY);
+            final float perScroll = (float) (scrollY + height) / rootHeight;
 
-                Log.e(TAG, "----------------------------On Scroll Log Starts----------------------------");
-
-                final float perScroll = (float) (scrollY + height) / rootHeight;
-
-                if (perScroll > height/rootHeight) {
-                    if (perScroll > 0.85f) {
-                        loadBitmap(0.85f, 1f);
-                        Log.e(TAG, "onScrollChange: full scrolll ------- max radius");
-                    } else {
-                        loadBitmap((perScroll/6)+perScroll, (perScroll/6)+perScroll);
-                        Log.e(TAG, "onScrollChange: viewAlpha ------- " + perScroll);
-                        Log.e(TAG, "onScrollChange: blurAlpha ------- " + ((perScroll/6)+perScroll));
-                    /*} else if (scrollDirection < 0) {
-
-                            Log.e(TAG, "onScrollChange: scroll down scrolll ------- " + perScroll / 4);
-                            loadBitmap(perScroll / 4);
-//                            Bitmap temp = BlurBuilder.blur(bit, perScroll / 4, mContext);
-//                            GlideApp.with(mContext)
-//                                    .load(temp)
-//                                    .into(mBinding.imgData);
-                        }*/
-                    }
-
-
+            if (perScroll > height/rootHeight) {
+                if (perScroll > 0.85f) {
+                    loadBitmap(0.85f, 1f);
+                    Log.e(TAG, "onScrollChange: full scrolll ------- max radius");
                 } else {
-
-                    Log.e(TAG, "onScrollChange: origin full scroll down ------- ");
-//
-//                    GlideApp.with(mContext)
-//                            .load(bit)
-//                            .into(mBinding.imgData);
-
-                    /*if (d!=null)
-                        d.dispose();*/
-//                    mBinding.imgData.setImageBitmap(bit);
-
-                    blurView.setAlpha(0f);
-                    view.setAlpha(0f);
-
-//                    bitmapUp = bit.copy(bit.getConfig(), true);
-//                    bitmapDown = bit.copy(bit.getConfig(), true);
-
+                    loadBitmap((perScroll/6)+perScroll, (perScroll/6)+perScroll);
+                    Log.e(TAG, "onScrollChange: viewAlpha ------- " + perScroll);
+                    Log.e(TAG, "onScrollChange: blurAlpha ------- " + ((perScroll/6)+perScroll));
                 }
+            } else {
+                Log.e(TAG, "onScrollChange: origin full scroll down ------- ");
+                blurView.setAlpha(0f);
+                view.setAlpha(0f);
             }
         });
 
@@ -181,24 +155,19 @@ public class HomeFragment extends Fragment {
                         return false;
                     }
 
+                    @SuppressLint("CheckResult")
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                         bit = resource.copy(resource.getConfig(), true);
-//                        NativeStackBlur.process(bit, 150))
-                        //                                BlurBuilder.blur(bit, 25, mContext))
-                        //        BlurBuilder.blur(bit, (float) scroll, mContext))
-                        d = Observable.fromCallable(() -> NativeStackBlur.process(bit, 150)).subscribeOn(Schedulers.io())
+                        // NativeStackBlur.process(bit, 150))
+                        // BlurBuilder.blur(bit, 25, mContext))
+                        // ImageFilter.applyFilter(bit,ImageFilter.Filter.GAUSSIAN_BLUR,30d))
+                        Observable.fromCallable(() -> NativeStackBlur.process(bit, 150)).subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(bitmap1 -> {
-                                            mBinding.blurView.setImageBitmap(bitmap1);
-                                        });
-
-
+                                        .subscribe(bitmap1 -> mBinding.blurView.setImageBitmap(bitmap1));
                         return false;
                     }
                 }).into(mBinding.imgData);
-
-
     }
 
     private void initData() {
@@ -212,11 +181,18 @@ public class HomeFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
+        /*try {
+            mListener = (OnFragmentInteractionListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+//        mListener = null;
     }
 
     @Override
@@ -230,33 +206,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadBitmap(float viewAlpha, float blurAlpha) {
-
-        /*if (d != null)
-            d.dispose();*/
-        /*d = Observable.fromCallable(() ->
-
-            ImageFilter.applyFilter(bit,ImageFilter.Filter.GAUSSIAN_BLUR,30d))
-//        BlurBuilder.blur(bit, (float) scroll, mContext))
-              .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap1 -> {
-//                                showProgress(false);
-                    mBinding.imgData.setImageBitmap(bitmap1);
-                });*/
-
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {*/
-//                mBinding.imgData.setImageBitmap(BlurBuilder.blur(bit, (float) scroll, mContext));
-//        mBinding.imgData.setImageBitmap(ImageFilter.applyFilter(bit,ImageFilter.Filter.GAUSSIAN_BLUR,24d));
         Log.e(TAG, "onScrollChange: viewAlpha ------- " + viewAlpha);
         Log.e(TAG, "onScrollChange: blurAlpha ------- " + blurAlpha);
-
         blurView.setAlpha(blurAlpha);
         view.setAlpha(viewAlpha);
-
-            /*}
-        });*/
     }
 
     public float dpToPixel(int dp) {
