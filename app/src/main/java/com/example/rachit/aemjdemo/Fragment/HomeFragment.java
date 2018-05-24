@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment {
             mBinding.scrollView.post(new Runnable() {
                 @Override
                 public void run() {
-                    mBinding.scrollView.scrollTo(0,restoredScrollY);
+                    mBinding.scrollView.smoothScrollTo(0,restoredScrollY);
                 }
             });
 
